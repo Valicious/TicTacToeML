@@ -42,6 +42,7 @@
             this.a3 = new System.Windows.Forms.Button();
             this.a2 = new System.Windows.Forms.Button();
             this.a1 = new System.Windows.Forms.Button();
+            this.updateMemoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
@@ -60,7 +61,8 @@
             // gameToolStripMenuItem
             // 
             this.gameToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.startToolStripMenuItem});
+            this.startToolStripMenuItem,
+            this.updateMemoryToolStripMenuItem});
             this.gameToolStripMenuItem.Name = "gameToolStripMenuItem";
             this.gameToolStripMenuItem.Size = new System.Drawing.Size(50, 20);
             this.gameToolStripMenuItem.Text = "Game";
@@ -68,7 +70,7 @@
             // startToolStripMenuItem
             // 
             this.startToolStripMenuItem.Name = "startToolStripMenuItem";
-            this.startToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.startToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.startToolStripMenuItem.Text = "Start";
             this.startToolStripMenuItem.Click += new System.EventHandler(this.startToolStripMenuItem_Click);
             // 
@@ -204,6 +206,13 @@
             this.a1.UseVisualStyleBackColor = true;
             this.a1.Click += new System.EventHandler(this.BoardClick);
             // 
+            // updateMemoryToolStripMenuItem
+            // 
+            this.updateMemoryToolStripMenuItem.Name = "updateMemoryToolStripMenuItem";
+            this.updateMemoryToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.updateMemoryToolStripMenuItem.Text = "Update Memory";
+            this.updateMemoryToolStripMenuItem.Click += new System.EventHandler(this.updateMemoryToolStripMenuItem_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -239,6 +248,7 @@
         private System.Windows.Forms.Button a3;
         private System.Windows.Forms.Button a2;
         private System.Windows.Forms.ToolStripMenuItem startToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem updateMemoryToolStripMenuItem;
     }
 }
 

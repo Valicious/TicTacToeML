@@ -18,7 +18,7 @@ namespace TicTacToeML
         public string Turn;
         private TTT _ttt;
         private Brain _Mach;
-        private int boardCounter = 9;
+        private int boardCounter;
 
         public Form1()
         {
@@ -30,18 +30,15 @@ namespace TicTacToeML
 
         private void startToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Logger.Log("MAIN","New game. Initializing parameters");
+            Logger.Log("MAIN","New game. Initializing parameters----------------------------");
             groupBox1.Enabled = true;
             InitializeBoard();
-            //Random rand = new Random();
-            //if (rand.Next(1) == 0)
-            //    Start
         }
 
         private void InitializeBoard()
         {
             _Board = new string[3, 3] { { "", "", "" }, { "", "", "" }, { "", "", "" } };
-            _Mach.PlayList = new ArrayList(); // TODO
+            _Mach.PlayList = new List<int[]>(); // TODO
             //initialize button texts to blank
             a1.Text = "";
             a2.Text = "";
@@ -61,6 +58,7 @@ namespace TicTacToeML
             c1.Enabled = true;
             c2.Enabled = true;
             c3.Enabled = true;
+            boardCounter = 9;
             Random randP = new Random();
             if (randP.Next(2) == 0)
                 Turn = "X"; // always User
@@ -76,21 +74,27 @@ namespace TicTacToeML
             ((Button)sender).Enabled = false;
             if (!_ttt.checkwin(_Board))
                 NextPlayer();
-            else groupBox1.Enabled = false; ;
+            else GameDone();
+            boardCounter--;
         }
 
         private void NextPlayer()
         {
-            if (Turn=="X")
-            {
-                Logger.Log("MAIN-game", "--Machine turn--");
-                Turn = "O";
-                MachineTurn();
-            }
+            if (boardCounter == 0)
+                GameDone();
             else
             {
-                Logger.Log("MAIN-game", "--Player turn--");
-                Turn = "X";
+                if (Turn == "X")
+                {
+                    Logger.Log("MAIN-game", "--Machine turn--");
+                    Turn = "O";
+                    MachineTurn();
+                }
+                else
+                {
+                    Logger.Log("MAIN-game", "--Player turn--");
+                    Turn = "X";
+                }
             }
         }
 
@@ -99,6 +103,7 @@ namespace TicTacToeML
             int[] loc = _Mach.play(_Board);
             _Board[loc[0], loc[1]] = Turn;
             Button sender = new Button();
+            #region [ switch button select ]
             switch (loc[0])
             {
                 case 0:
@@ -168,12 +173,55 @@ namespace TicTacToeML
                         break;
                     }
             };
+            #endregion
             sender.Text = Turn;
             sender.Enabled = false;
+            Refresh();
             this.ActiveControl = null;
             if (!_ttt.checkwin(_Board))
                 NextPlayer();
-            else groupBox1.Enabled = false; ;
+            else GameDone();
+            boardCounter--;
+        }
+
+        private void GameDone()
+        {
+            Logger.Log("MAIN-GameDone", "--Game done--");
+            if (boardCounter == 0)
+            {
+                Logger.Log("MAIN-GameDone", "game Draw");
+                _Mach.Learn('D');
+            }
+            else if (Turn == "O")
+            {
+                Logger.Log("MAIN-GameDone", "Machine Won");
+                _Mach.Learn('W');
+            }
+            else if (Turn == "X")
+            {
+                //nothign happens
+                Logger.Log("MAIN-GameDone", "Machine Lost");
+                //_Mach.Learn('L');
+            }
+            
+            groupBox1.Enabled = false;
+            /*D := Draw
+             *W := Won
+             *L := Lost
+             * */
+        }
+
+        private void updateMemoryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DialogResult dialogResult = MessageBox.Show("Update Memory", "Do you want to save the aquired knowledge?", MessageBoxButtons.YesNo);
+            if (dialogResult == DialogResult.Yes)
+            {
+                dialogResult = MessageBox.Show("Update Memory", "Are you really sure?", MessageBoxButtons.YesNo);
+                if (dialogResult == DialogResult.Yes)
+                {
+                    _Mach.UpdateMemory();
+                }
+            }
         }
     }
 }

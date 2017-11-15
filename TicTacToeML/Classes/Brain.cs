@@ -15,8 +15,9 @@ namespace TicTacToeML.Classes
         private const double Kbase = 19683.00000000000;//total possible board layouts
         public double KnowledgeCompleteness { get; set; }
         private List<string[][,]> boardLayout;
+        private int MemoryStockPos;
 
-        public ArrayList PlayList { get; set; }
+        public List<int[]> PlayList { get; set; }
 
         public Brain()
         {
@@ -39,17 +40,61 @@ namespace TicTacToeML.Classes
             Reader = command.ExecuteReader();
             Logger.Log("Brain", "Stage 2 : Reading Knowledge");
             boardLayout = new List<string[][,]>();
+            MemoryStockPos = 0;
             while (Reader.Read())
             {
                 string[,] blayout = con1to2((Reader[1]).ToString().Split(','));
                 string[,] bpins = con1to2((Reader[2]).ToString().Split(','));
                 string[][,] ArrRead = { blayout, bpins };
                 boardLayout.Add(ArrRead);
-                //Logger.Log("Brain", string.Format("Stage 2.{0} : {1} {2}",boardLayout.Count, blayout., ArrRead[1].ToString()));
+                MemoryStockPos++;
+                Logger.Log("Brain", string.Format("Stage 2.{0} : {1} \t {2}",boardLayout.Count, con2to1(blayout), con2to1(bpins)));
             }
             Logger.Log("Brain", "Stage 3 : Done. Knowledge Imported Successfuly");
         }
 
+        public void UpdateMemory()
+        {
+            //update
+            Logger.Log("Brain-Memory", "Stage 1 : Updating Memory");
+            int counter = MemoryStockPos;
+            while (MemoryStockPos > 0)
+            {
+                Logger.Log("Brain-Memory", string.Format("Stage 1 : Updating Memory. {0} left", MemoryStockPos));
+                string blayout = con2to1(boardLayout[0][0]);
+                string bpins = con2to1(boardLayout[0][1]);
+                string CS = ConfigurationManager.ConnectionStrings["dbBrain_Conn"].ConnectionString;
+                SqlConnection connection = new SqlConnection(CS);
+                string sql = "UPDATE [Knowledge] SET [Pins] = '"+ bpins +"' WHERE [Layout] = '"+blayout+"'";
+                connection.Open();
+                SqlCommand command = new SqlCommand(sql, connection);
+                command.ExecuteNonQuery();
+                command.ExecuteReader();
+                connection.Close();
+                MemoryStockPos--;
+                boardLayout.RemoveAt(0);
+            }
+            //store
+            
+            while (boardLayout.Count > 0)
+            {
+                Logger.Log("Brain-Memory", string.Format("Stage 2 : Inserting new Memories. {0} left", boardLayout.Count));
+                string blayout = con2to1(boardLayout[0][0]);
+                string bpins = con2to1(boardLayout[0][1]);
+                string CS = ConfigurationManager.ConnectionStrings["dbBrain_Conn"].ConnectionString;
+                SqlConnection connection = new SqlConnection(CS);
+                string sql = "INSERT INTO [Knowledge] ([IDstate], [Layout], [Pins]) VALUES ("+ counter + " ,N'" + blayout + "' ,N'" + bpins + "')";
+                connection.Open();
+                SqlCommand command = new SqlCommand(sql, connection);
+                command.ExecuteNonQuery();
+                command.ExecuteReader();
+                connection.Close();
+                boardLayout.RemoveAt(0);
+                counter++;
+            }
+            //string[] blayout = con2to1();
+            //string[] bpins = con2to1();
+        }
 
         public int[] play(string[,] board)
         {
@@ -71,7 +116,7 @@ namespace TicTacToeML.Classes
                 }
                 string[][,] ArrRead = { newboard, bpins };
                 boardLayout.Add(ArrRead);
-                pos = boardLayout.Count();
+                pos = boardLayout.Count() -1;
                 Thought = ArrRead;
                 KnowledgeCompleteness += 1 / Kbase;
                 Logger.Log("Brain-game", string.Format("Knowledge Aquired! {0:N10}", KnowledgeCompleteness));
@@ -90,12 +135,41 @@ namespace TicTacToeML.Classes
                 A = RandA.Next(3);
                 B = RandB.Next(3);
             }
-            object[] obj = { pos, A, B };
+            int[] obj = { pos, A, B };
             PlayList.Add(obj);
             Thought[1][A, B] = (int.Parse(Thought[1][A, B]) - 1).ToString();
-           
+            boardLayout[pos] = Thought; 
             Logger.Log("Brain-game", "Pin Selected");
             return new int[]{A,B};
+        }
+
+        public void Learn(char score) 
+        {
+            switch (score)
+            {
+                case 'W':
+                    {
+                        while (PlayList.Count > 0)
+                        {
+                            int[] cur = PlayList[0];
+                            boardLayout[cur[0]][1][cur[1], cur[2]] = (int.Parse(boardLayout[cur[0]][1][cur[1],cur[2]]) + 3).ToString();
+                            PlayList.RemoveAt(0);
+                        }
+                        Logger.Log("Brain-GameDone", "Machine awarded +3");
+                        break;
+                    }
+                case 'D':
+                    {
+                        while (PlayList.Count > 0)
+                        {
+                            int[] cur = PlayList[0];
+                            boardLayout[cur[0]][1][cur[1], cur[2]] = (int.Parse(boardLayout[cur[0]][1][cur[1], cur[2]]) + 1).ToString();
+                            PlayList.RemoveAt(0);
+                        }
+                        Logger.Log("Brain-GameDone", "Machine awarded +1");
+                        break;
+                    }
+            }
         }
 
         #region [ utils ]
@@ -109,6 +183,14 @@ namespace TicTacToeML.Classes
                 order++;
             }
             return output;
+        }
+
+        private string con2to1(string[,] input)
+        {
+            string output = "";
+            foreach (string a in input)
+                output += a + ',';
+            return output.Remove(output.Length - 1, 1); ;
         }
         #endregion
     }
