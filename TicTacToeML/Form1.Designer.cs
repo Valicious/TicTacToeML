@@ -33,6 +33,7 @@
             this.startToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.updateMemoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contiueToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.stopToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.c3 = new System.Windows.Forms.Button();
@@ -52,7 +53,6 @@
             this.lblLos = new System.Windows.Forms.Label();
             this.lblDraw = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.stopToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
@@ -84,6 +84,7 @@
             this.startToolStripMenuItem.Name = "startToolStripMenuItem";
             this.startToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.startToolStripMenuItem.Text = "Start";
+            this.startToolStripMenuItem.Click += new System.EventHandler(this.startToolStripMenuItem_Click);
             // 
             // updateMemoryToolStripMenuItem
             // 
@@ -98,6 +99,13 @@
             this.contiueToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.contiueToolStripMenuItem.Text = "contiue";
             this.contiueToolStripMenuItem.Click += new System.EventHandler(this.contiueToolStripMenuItem_Click);
+            // 
+            // stopToolStripMenuItem
+            // 
+            this.stopToolStripMenuItem.Name = "stopToolStripMenuItem";
+            this.stopToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.stopToolStripMenuItem.Text = "Stop";
+            this.stopToolStripMenuItem.Click += new System.EventHandler(this.stopToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
@@ -302,13 +310,6 @@
             this.label2.Size = new System.Drawing.Size(156, 13);
             this.label2.TabIndex = 18;
             this.label2.Text = "Win             Lose               draw";
-            // 
-            // stopToolStripMenuItem
-            // 
-            this.stopToolStripMenuItem.Name = "stopToolStripMenuItem";
-            this.stopToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
-            this.stopToolStripMenuItem.Text = "Stop";
-            this.stopToolStripMenuItem.Click += new System.EventHandler(this.stopToolStripMenuItem_Click);
             // 
             // Form1
             // 
