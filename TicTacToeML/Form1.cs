@@ -19,20 +19,51 @@ namespace TicTacToeML
         private TTT _ttt;
         private Brain _Mach;
         private int boardCounter;
+        private int gamecounter;
+        private int win, lose, draw;
+        private bool GameOn;
 
         public Form1()
         {
+            GameOn = true;
             InitializeComponent();
             groupBox1.Enabled = false;
             _ttt = new TTT();
             _Mach = new Brain();
+            lblNum.Text = "";
+            lblKno.Text = "";
+            gamecounter = 0;
+            win = 0;
+            lose = 0;
+            draw = -1;
         }
 
+        public void GameLoop()
+        {
+            while (GameOn)
+            {
+                if ((boardCounter == 0) || ((_ttt.checkwin(_Board))))
+                {
+                    GameDone();
+                    startToolStripMenuItem_Click(null, null);
+                }
+                NextPlayer();
+                groupBox1.Visible = false;//SPEED
+                if (gamecounter%500 == 0)//SPEED
+                Refresh();
+                ActiveControl = null;
+                boardCounter--;
+                if ((win / (gamecounter * 1.00) * 100) > 70) GameOn = false;
+                if ((draw / (gamecounter * 1.00) * 100) > 70) GameOn = false;
+                // if (gamecounter % 1000 == 0) GameOn = false;
+            }
+        }
         private void startToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Logger.Log("MAIN","New game. Initializing parameters----------------------------");
+            Logger.Log("MAIN", "New game. Initializing parameters----------------------------");
             groupBox1.Enabled = true;
             InitializeBoard();
+            contiueToolStripMenuItem.Enabled = true;
         }
 
         private void InitializeBoard()
@@ -40,6 +71,12 @@ namespace TicTacToeML
             _Board = new string[3, 3] { { "", "", "" }, { "", "", "" }, { "", "", "" } };
             _Mach.PlayList = new List<int[]>(); // TODO
             //initialize button texts to blank
+            lblKno.Text = _Mach.Count().ToString();
+            gamecounter++;
+            lblNum.Text = gamecounter.ToString();
+            lblwin.Text = string.Format("{0:N2}", win / (gamecounter * 1.00) * 100);
+            lblLos.Text = string.Format("{0:N2}", lose / (gamecounter * 1.00) * 100);
+            lblDraw.Text = string.Format("{0:N2}", draw / (gamecounter * 1.00) * 100);
             a1.Text = "";
             a2.Text = "";
             a3.Text = "";
@@ -63,7 +100,6 @@ namespace TicTacToeML
             if (randP.Next(2) == 0)
                 Turn = "X"; // always User
             else Turn = "O";
-            NextPlayer();
         }
 
         private void BoardClick(object sender, EventArgs e)
@@ -80,29 +116,110 @@ namespace TicTacToeML
 
         private void NextPlayer()
         {
-            if (boardCounter == 0)
-                GameDone();
+            if (Turn == "X")
+            {
+                Logger.Log("MAIN-game", "--Machine turn--");
+                Turn = "O";
+                MachineTurn();
+            }
             else
             {
-                if (Turn == "X")
-                {
-                    Logger.Log("MAIN-game", "--Machine turn--");
-                    Turn = "O";
-                    MachineTurn();
-                }
-                else
-                {
-                    Logger.Log("MAIN-game", "--Player turn--");
-                    Turn = "X";
-                }
+                Logger.Log("MAIN-game", "--Player turn--");
+                Turn = "X";
+                randomPLay();
             }
+        }
+        Button sender;
+        private void randomPLay()
+        {
+            Random RandA = new Random();
+            int A = RandA.Next(9);
+            while (_Board[A / 3, A % 3] != "")
+                A = RandA.Next(9);
+            int B = A % 3;
+            A = A / 3;
+            _Board[A, B] = Turn;
+            sender = new Button();
+            #region [ switch button select ]
+            switch (A)
+            {
+                case 0:
+                    {
+                        switch (B)
+                        {
+                            case 0:
+                                {
+                                    sender = a1;
+                                    break;
+                                }
+                            case 1:
+                                {
+                                    sender = a2;
+                                    break;
+                                }
+                            case 2:
+                                {
+                                    sender = a3;
+                                    break;
+                                }
+                        }
+                        break;
+                    }
+                case 1:
+                    {
+                        switch (B)
+                        {
+                            case 0:
+                                {
+                                    sender = b1;
+                                    break;
+                                }
+                            case 1:
+                                {
+                                    sender = b2;
+                                    break;
+                                }
+                            case 2:
+                                {
+                                    sender = b3;
+                                    break;
+                                }
+                        }
+                        break;
+                    }
+                case 2:
+                    {
+                        switch (B)
+                        {
+                            case 0:
+                                {
+                                    sender = c1;
+                                    break;
+                                }
+                            case 1:
+                                {
+                                    sender = c2;
+                                    break;
+                                }
+                            case 2:
+                                {
+                                    sender = c3;
+                                    break;
+                                }
+                        }
+                        break;
+                    }
+            };
+            #endregion
+            sender.Text = Turn;
+            sender.Enabled = false;
         }
 
         private void MachineTurn()
         {
             int[] loc = _Mach.play(_Board);
             _Board[loc[0], loc[1]] = Turn;
-            Button sender = new Button();
+            sender = new Button();
             #region [ switch button select ]
             switch (loc[0])
             {
@@ -176,35 +293,41 @@ namespace TicTacToeML
             #endregion
             sender.Text = Turn;
             sender.Enabled = false;
-            Refresh();
-            this.ActiveControl = null;
-            if (!_ttt.checkwin(_Board))
-                NextPlayer();
-            else GameDone();
-            boardCounter--;
+        }
+
+        private void contiueToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            GameOn = true;
+            GameLoop();
         }
 
         private void GameDone()
         {
             Logger.Log("MAIN-GameDone", "--Game done--");
+            Logger.SetForColGreen();
             if (boardCounter == 0)
             {
                 Logger.Log("MAIN-GameDone", "game Draw");
+                draw++;
                 _Mach.Learn('D');
             }
             else if (Turn == "O")
             {
+                
                 Logger.Log("MAIN-GameDone", "Machine Won");
+                win++;
                 _Mach.Learn('W');
             }
             else if (Turn == "X")
             {
                 //nothign happens
                 Logger.Log("MAIN-GameDone", "Machine Lost");
+                lose++;
                 //_Mach.Learn('L');
             }
-            
+            Logger.Reset();
             groupBox1.Enabled = false;
+
             /*D := Draw
              *W := Won
              *L := Lost

@@ -19,6 +19,11 @@ namespace TicTacToeML.Classes
 
         public List<int[]> PlayList { get; set; }
 
+        public int Count()
+        {
+            return boardLayout.Count;
+        }
+
         public Brain()
         {
             Logger.Log("Brain", "Stage 0 : Initiating knowledge loading");
@@ -48,9 +53,10 @@ namespace TicTacToeML.Classes
                 string[][,] ArrRead = { blayout, bpins };
                 boardLayout.Add(ArrRead);
                 MemoryStockPos++;
-                Logger.Log("Brain", string.Format("Stage 2.{0} : {1} \t {2}",boardLayout.Count, con2to1(blayout), con2to1(bpins)));
+                Logger.Log("Brain", string.Format("Stage 2.{0} : {1} \t {2}", boardLayout.Count, con2to1(blayout), con2to1(bpins)));
             }
             Logger.Log("Brain", "Stage 3 : Done. Knowledge Imported Successfuly");
+            PlayList = new List<int[]>();
         }
 
         public void UpdateMemory()
@@ -65,7 +71,7 @@ namespace TicTacToeML.Classes
                 string bpins = con2to1(boardLayout[0][1]);
                 string CS = ConfigurationManager.ConnectionStrings["dbBrain_Conn"].ConnectionString;
                 SqlConnection connection = new SqlConnection(CS);
-                string sql = "UPDATE [Knowledge] SET [Pins] = '"+ bpins +"' WHERE [Layout] = '"+blayout+"'";
+                string sql = "UPDATE [Knowledge] SET [Pins] = '" + bpins + "' WHERE [Layout] = '" + blayout + "'";
                 connection.Open();
                 SqlCommand command = new SqlCommand(sql, connection);
                 command.ExecuteNonQuery();
@@ -75,7 +81,7 @@ namespace TicTacToeML.Classes
                 boardLayout.RemoveAt(0);
             }
             //store
-            
+
             while (boardLayout.Count > 0)
             {
                 Logger.Log("Brain-Memory", string.Format("Stage 2 : Inserting new Memories. {0} left", boardLayout.Count));
@@ -83,7 +89,7 @@ namespace TicTacToeML.Classes
                 string bpins = con2to1(boardLayout[0][1]);
                 string CS = ConfigurationManager.ConnectionStrings["dbBrain_Conn"].ConnectionString;
                 SqlConnection connection = new SqlConnection(CS);
-                string sql = "INSERT INTO [Knowledge] ([IDstate], [Layout], [Pins]) VALUES ("+ counter + " ,N'" + blayout + "' ,N'" + bpins + "')";
+                string sql = "INSERT INTO [Knowledge] ([IDstate], [Layout], [Pins]) VALUES (" + counter + " ,N'" + blayout + "' ,N'" + bpins + "')";
                 connection.Open();
                 SqlCommand command = new SqlCommand(sql, connection);
                 command.ExecuteNonQuery();
@@ -100,7 +106,32 @@ namespace TicTacToeML.Classes
         {
             string[][,] Thought;
 
-            int pos = boardLayout.FindIndex(u => (string[,])u[0] == (board)); //NEEDS TO BE FIXED!!
+            //int pos = boardLayout.FindIndex(u => (string[,])u[0] == (board)); //NEEDS TO BE FIXED!!
+            int pos = -1;
+            int counter = 0;
+            for (int i = 0; i < boardLayout.Count; i++)
+            {
+                counter = 0;
+                for (int a = 0; a < 3; a++)
+                {
+                    for (int b = 0; b < 3; b++)
+                    {
+                        if (boardLayout[i][0][a, b].Equals(board[a, b]))
+                        {
+                            counter++;
+                        }
+                        else break;
+                    }
+                 }
+                if (counter == 9)
+                {
+                    pos = i;
+                    break;
+                }
+            }
+            object newe = boardLayout;
+
+
             if (pos == -1)
             {
                 string[,] bpins = new string[3, 3];
@@ -109,14 +140,14 @@ namespace TicTacToeML.Classes
                 {
                     for (int b = 0; b < 3; b++)
                     {
-                        if (board[a, b] == "") bpins[a, b] = "3";
+                        if (board[a, b] == "") bpins[a, b] = "1";
                         else bpins[a, b] = "0";
                         newboard[a, b] = (string)board[a, b].Clone();
                     }
                 }
                 string[][,] ArrRead = { newboard, bpins };
                 boardLayout.Add(ArrRead);
-                pos = boardLayout.Count() -1;
+                pos = boardLayout.Count() - 1;
                 Thought = ArrRead;
                 KnowledgeCompleteness += 1 / Kbase;
                 Logger.Log("Brain-game", string.Format("Knowledge Aquired! {0:N10}", KnowledgeCompleteness));
@@ -125,25 +156,40 @@ namespace TicTacToeML.Classes
                 Thought = boardLayout.ElementAt(pos);
             Logger.Log("Brain-game", "Board Selected");
             Random RandA = new Random();
-            Random RandB = new Random();
-            int A = RandA.Next(3);
-            int B = RandB.Next(3);
-            while (Thought[1][A, B] == "0")
+            int A = RandA.Next(9);
+            int lc = 120;
+            while (Thought[1][A / 3, A % 3] == "0")
             {
-                RandA = new Random();
-                RandB = new Random();
-                A = RandA.Next(3);
-                B = RandB.Next(3);
+                A = RandA.Next(9);
+                lc--;
+                if (lc == 0)
+                {//Add refresh counter
+                    Logger.SetBackBlue();
+                    Logger.Log("Brain-game", "                                    Reseting Node");
+                   // Logger.Reset();
+                    for (int a = 0; a < 3; a++)
+                    {
+                        for (int b = 0; b < 3; b++)
+                        {
+                            if (Thought[0][a, b] == "") Thought[1][a, b] = "1";
+                            else Thought[1][a, b] = "0";
+                        }
+                    }
+                    lc = 81;
+                }
             }
+            Logger.Log("Brain-game", "                                   " + lc.ToString());
+            int B = A % 3;
+            A = A / 3;
             int[] obj = { pos, A, B };
             PlayList.Add(obj);
             Thought[1][A, B] = (int.Parse(Thought[1][A, B]) - 1).ToString();
-            boardLayout[pos] = Thought; 
+            boardLayout[pos] = Thought;
             Logger.Log("Brain-game", "Pin Selected");
-            return new int[]{A,B};
+            return new int[] { A, B };
         }
 
-        public void Learn(char score) 
+        public void Learn(char score)
         {
             switch (score)
             {
@@ -152,7 +198,7 @@ namespace TicTacToeML.Classes
                         while (PlayList.Count > 0)
                         {
                             int[] cur = PlayList[0];
-                            boardLayout[cur[0]][1][cur[1], cur[2]] = (int.Parse(boardLayout[cur[0]][1][cur[1],cur[2]]) + 3).ToString();
+                            boardLayout[cur[0]][1][cur[1], cur[2]] = (int.Parse(boardLayout[cur[0]][1][cur[1], cur[2]]) + 3).ToString();
                             PlayList.RemoveAt(0);
                         }
                         Logger.Log("Brain-GameDone", "Machine awarded +3");

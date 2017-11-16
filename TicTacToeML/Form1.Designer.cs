@@ -31,6 +31,7 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.gameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.startToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.updateMemoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.c3 = new System.Windows.Forms.Button();
@@ -42,7 +43,15 @@
             this.a3 = new System.Windows.Forms.Button();
             this.a2 = new System.Windows.Forms.Button();
             this.a1 = new System.Windows.Forms.Button();
-            this.updateMemoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.label1 = new System.Windows.Forms.Label();
+            this.lblNum = new System.Windows.Forms.Label();
+            this.lblKno = new System.Windows.Forms.Label();
+            this.labels = new System.Windows.Forms.Label();
+            this.lblwin = new System.Windows.Forms.Label();
+            this.lblLos = new System.Windows.Forms.Label();
+            this.lblDraw = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.contiueToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
@@ -62,7 +71,8 @@
             // 
             this.gameToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.startToolStripMenuItem,
-            this.updateMemoryToolStripMenuItem});
+            this.updateMemoryToolStripMenuItem,
+            this.contiueToolStripMenuItem});
             this.gameToolStripMenuItem.Name = "gameToolStripMenuItem";
             this.gameToolStripMenuItem.Size = new System.Drawing.Size(50, 20);
             this.gameToolStripMenuItem.Text = "Game";
@@ -72,7 +82,13 @@
             this.startToolStripMenuItem.Name = "startToolStripMenuItem";
             this.startToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.startToolStripMenuItem.Text = "Start";
-            this.startToolStripMenuItem.Click += new System.EventHandler(this.startToolStripMenuItem_Click);
+            // 
+            // updateMemoryToolStripMenuItem
+            // 
+            this.updateMemoryToolStripMenuItem.Name = "updateMemoryToolStripMenuItem";
+            this.updateMemoryToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.updateMemoryToolStripMenuItem.Text = "Update Memory";
+            this.updateMemoryToolStripMenuItem.Click += new System.EventHandler(this.updateMemoryToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
@@ -91,7 +107,7 @@
             this.groupBox1.Controls.Add(this.a3);
             this.groupBox1.Controls.Add(this.a2);
             this.groupBox1.Controls.Add(this.a1);
-            this.groupBox1.Location = new System.Drawing.Point(12, 27);
+            this.groupBox1.Location = new System.Drawing.Point(12, 90);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(418, 426);
             this.groupBox1.TabIndex = 10;
@@ -206,18 +222,98 @@
             this.a1.UseVisualStyleBackColor = true;
             this.a1.Click += new System.EventHandler(this.BoardClick);
             // 
-            // updateMemoryToolStripMenuItem
+            // label1
             // 
-            this.updateMemoryToolStripMenuItem.Name = "updateMemoryToolStripMenuItem";
-            this.updateMemoryToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
-            this.updateMemoryToolStripMenuItem.Text = "Update Memory";
-            this.updateMemoryToolStripMenuItem.Click += new System.EventHandler(this.updateMemoryToolStripMenuItem_Click);
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(19, 34);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(76, 13);
+            this.label1.TabIndex = 11;
+            this.label1.Text = "Game number:";
+            // 
+            // lblNum
+            // 
+            this.lblNum.AutoSize = true;
+            this.lblNum.Location = new System.Drawing.Point(111, 34);
+            this.lblNum.Name = "lblNum";
+            this.lblNum.Size = new System.Drawing.Size(39, 13);
+            this.lblNum.TabIndex = 12;
+            this.lblNum.Text = "lblNum";
+            // 
+            // lblKno
+            // 
+            this.lblKno.AutoSize = true;
+            this.lblKno.Location = new System.Drawing.Point(111, 58);
+            this.lblKno.Name = "lblKno";
+            this.lblKno.Size = new System.Drawing.Size(35, 13);
+            this.lblKno.TabIndex = 14;
+            this.lblKno.Text = "label2";
+            // 
+            // labels
+            // 
+            this.labels.AutoSize = true;
+            this.labels.Location = new System.Drawing.Point(19, 58);
+            this.labels.Name = "labels";
+            this.labels.Size = new System.Drawing.Size(86, 13);
+            this.labels.TabIndex = 13;
+            this.labels.Text = "Knowledge Size:";
+            // 
+            // lblwin
+            // 
+            this.lblwin.AutoSize = true;
+            this.lblwin.Location = new System.Drawing.Point(227, 58);
+            this.lblwin.Name = "lblwin";
+            this.lblwin.Size = new System.Drawing.Size(35, 13);
+            this.lblwin.TabIndex = 15;
+            this.lblwin.Text = "label2";
+            // 
+            // lblLos
+            // 
+            this.lblLos.AutoSize = true;
+            this.lblLos.Location = new System.Drawing.Point(287, 58);
+            this.lblLos.Name = "lblLos";
+            this.lblLos.Size = new System.Drawing.Size(35, 13);
+            this.lblLos.TabIndex = 16;
+            this.lblLos.Text = "label2";
+            // 
+            // lblDraw
+            // 
+            this.lblDraw.AutoSize = true;
+            this.lblDraw.Location = new System.Drawing.Point(352, 58);
+            this.lblDraw.Name = "lblDraw";
+            this.lblDraw.Size = new System.Drawing.Size(35, 13);
+            this.lblDraw.TabIndex = 17;
+            this.lblDraw.Text = "label2";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(227, 34);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(156, 13);
+            this.label2.TabIndex = 18;
+            this.label2.Text = "Win             Lose               draw";
+            // 
+            // contiueToolStripMenuItem
+            // 
+            this.contiueToolStripMenuItem.Name = "contiueToolStripMenuItem";
+            this.contiueToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.contiueToolStripMenuItem.Text = "contiue";
+            this.contiueToolStripMenuItem.Click += new System.EventHandler(this.contiueToolStripMenuItem_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(442, 470);
+            this.ClientSize = new System.Drawing.Size(442, 528);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.lblDraw);
+            this.Controls.Add(this.lblLos);
+            this.Controls.Add(this.lblwin);
+            this.Controls.Add(this.lblKno);
+            this.Controls.Add(this.labels);
+            this.Controls.Add(this.lblNum);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
@@ -249,6 +345,15 @@
         private System.Windows.Forms.Button a2;
         private System.Windows.Forms.ToolStripMenuItem startToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem updateMemoryToolStripMenuItem;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label lblNum;
+        private System.Windows.Forms.Label lblKno;
+        private System.Windows.Forms.Label labels;
+        private System.Windows.Forms.Label lblwin;
+        private System.Windows.Forms.Label lblLos;
+        private System.Windows.Forms.Label lblDraw;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.ToolStripMenuItem contiueToolStripMenuItem;
     }
 }
 
