@@ -6,6 +6,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using TicTacToeML.Classes;
@@ -18,31 +19,75 @@ namespace TicTacToeML
         public string Turn;
         private TTT _ttt;
         private Brain _Mach;
-        private int boardCounter = 9;
+        private int boardCounter;
+        private int gamecounter;
+        private int win, lose, draw;
+        private bool GameOn, Gameoff;
 
         public Form1()
         {
+            GameOn = true;
             InitializeComponent();
             groupBox1.Enabled = false;
             _ttt = new TTT();
             _Mach = new Brain();
+            lblNum.Text = "";
+            lblKno.Text = "";
+            gamecounter = 0;
+            win = 0;
+            lose = 0;
+            draw = -1;
+            Gameoff = false;
         }
 
+        public void GameLoop()
+        {
+            while (GameOn)
+            {
+                if ((boardCounter == 0) || ((_ttt.checkwin(_Board))))
+                {
+                    GameDone();
+                    InitializeBoard();
+                    if (Gameoff == true)
+                    {
+                        GameOn = false;
+                        break;
+                    }
+                }
+                NextPlayer();
+                groupBox1.Visible = false;//SPEED
+                if (gamecounter % 200 == 0)//SPEED
+                    Refresh();
+                ActiveControl = null;
+                boardCounter--;
+                //if ((win / (gamecounter * 1.00) * 100) > 70) GameOn = false;
+                //if ((draw / (gamecounter * 1.00) * 100) > 70) GameOn = false;
+                if (gamecounter % 600 == 0) GameOn = false;
+            }
+        }
         private void startToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Logger.Log("MAIN","New game. Initializing parameters");
-            groupBox1.Enabled = true;
             InitializeBoard();
-            //Random rand = new Random();
-            //if (rand.Next(1) == 0)
-            //    Start
+            NextPlayer();
+            Refresh();
+            ActiveControl = null;
+            boardCounter--;
         }
 
         private void InitializeBoard()
         {
+            Logger.Log("MAIN", "New game. Initializing parameters----------------------------");
+            groupBox1.Enabled = true;
+            contiueToolStripMenuItem.Enabled = true;
             _Board = new string[3, 3] { { "", "", "" }, { "", "", "" }, { "", "", "" } };
-            _Mach.PlayList = new ArrayList(); // TODO
+            _Mach.PlayList = new List<int[]>(); // TODO
             //initialize button texts to blank
+            lblKno.Text = _Mach.Count().ToString();
+            gamecounter++;
+            lblNum.Text = gamecounter.ToString();
+            lblwin.Text = string.Format("{0:N2}", win / (gamecounter * 1.00) * 100);
+            lblLos.Text = string.Format("{0:N2}", lose / (gamecounter * 1.00) * 100);
+            lblDraw.Text = string.Format("{0:N2}", draw / (gamecounter * 1.00) * 100);
             a1.Text = "";
             a2.Text = "";
             a3.Text = "";
@@ -61,11 +106,11 @@ namespace TicTacToeML
             c1.Enabled = true;
             c2.Enabled = true;
             c3.Enabled = true;
+            boardCounter = 9;
             Random randP = new Random();
             if (randP.Next(2) == 0)
                 Turn = "X"; // always User
             else Turn = "O";
-            NextPlayer();
         }
 
         private void BoardClick(object sender, EventArgs e)
@@ -76,12 +121,13 @@ namespace TicTacToeML
             ((Button)sender).Enabled = false;
             if (!_ttt.checkwin(_Board))
                 NextPlayer();
-            else groupBox1.Enabled = false; ;
+            else GameDone();
+            boardCounter--;
         }
 
         private void NextPlayer()
         {
-            if (Turn=="X")
+            if (Turn == "X")
             {
                 Logger.Log("MAIN-game", "--Machine turn--");
                 Turn = "O";
@@ -91,14 +137,105 @@ namespace TicTacToeML
             {
                 Logger.Log("MAIN-game", "--Player turn--");
                 Turn = "X";
+                randomPLay();
             }
+        }
+        Button sender;
+        private void randomPLay()
+        {
+            Random RandA = new Random();
+            int A = RandA.Next(9);
+            Thread newThread = new Thread(delegate ()
+            {
+                while (_Board[A / 3, A % 3] != "")
+                    A = RandA.Next(9);
+            });
+            newThread.Start();
+            int B = A % 3;
+            A = A / 3;
+            _Board[A, B] = Turn;
+            sender = new Button();
+            #region [ switch button select ]
+            switch (A)
+            {
+                case 0:
+                    {
+                        switch (B)
+                        {
+                            case 0:
+                                {
+                                    sender = a1;
+                                    break;
+                                }
+                            case 1:
+                                {
+                                    sender = a2;
+                                    break;
+                                }
+                            case 2:
+                                {
+                                    sender = a3;
+                                    break;
+                                }
+                        }
+                        break;
+                    }
+                case 1:
+                    {
+                        switch (B)
+                        {
+                            case 0:
+                                {
+                                    sender = b1;
+                                    break;
+                                }
+                            case 1:
+                                {
+                                    sender = b2;
+                                    break;
+                                }
+                            case 2:
+                                {
+                                    sender = b3;
+                                    break;
+                                }
+                        }
+                        break;
+                    }
+                case 2:
+                    {
+                        switch (B)
+                        {
+                            case 0:
+                                {
+                                    sender = c1;
+                                    break;
+                                }
+                            case 1:
+                                {
+                                    sender = c2;
+                                    break;
+                                }
+                            case 2:
+                                {
+                                    sender = c3;
+                                    break;
+                                }
+                        }
+                        break;
+                    }
+            };
+            #endregion
+            sender.Text = Turn;
+            sender.Enabled = false;
         }
 
         private void MachineTurn()
         {
             int[] loc = _Mach.play(_Board);
             _Board[loc[0], loc[1]] = Turn;
-            Button sender = new Button();
+            sender = new Button();
+            #region [ switch button select ]
             switch (loc[0])
             {
                 case 0:
@@ -168,12 +305,73 @@ namespace TicTacToeML
                         break;
                     }
             };
+            #endregion
             sender.Text = Turn;
             sender.Enabled = false;
-            this.ActiveControl = null;
-            if (!_ttt.checkwin(_Board))
-                NextPlayer();
-            else groupBox1.Enabled = false; ;
+        }
+
+        private void contiueToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            boardCounter = 0;
+            GameOn = true;
+            GameLoop();
+        }
+
+        private void stopToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Gameoff = true;
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            // TODO: This line of code loads data into the 'dbBrainDataSet.Knowledge' table. You can move, or remove it, as needed.
+
+        }
+
+        private void GameDone()
+        {
+            Logger.Log("MAIN-GameDone", "--Game done--");
+            Logger.SetForColGreen();
+            if (boardCounter == 0)
+            {
+                Logger.Log("MAIN-GameDone", "game Draw");
+                draw++;
+                _Mach.Learn('D');
+            }
+            else if (Turn == "O")
+            {
+
+                Logger.Log("MAIN-GameDone", "Machine Won");
+                win++;
+                _Mach.Learn('W');
+            }
+            else if (Turn == "X")
+            {
+                //nothign happens
+                Logger.Log("MAIN-GameDone", "Machine Lost");
+                lose++;
+                //_Mach.Learn('L');
+            }
+            Logger.Reset();
+            groupBox1.Enabled = false;
+
+            /*D := Draw
+             *W := Won
+             *L := Lost
+             * */
+        }
+
+        private void updateMemoryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DialogResult dialogResult = MessageBox.Show("Update Memory", "Do you want to save the aquired knowledge?", MessageBoxButtons.YesNo);
+            if (dialogResult == DialogResult.Yes)
+            {
+                dialogResult = MessageBox.Show("Update Memory", "Are you really sure?", MessageBoxButtons.YesNo);
+                if (dialogResult == DialogResult.Yes)
+                {
+                    _Mach.UpdateMemory();
+                }
+            }
         }
     }
 }
