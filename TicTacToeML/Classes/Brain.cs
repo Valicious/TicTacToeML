@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Configuration;
 using System.IO;
+using System.Threading;
 
 namespace TicTacToeML.Classes
 {
@@ -53,7 +54,7 @@ namespace TicTacToeML.Classes
                 string[][,] ArrRead = { blayout, bpins };
                 boardLayout.Add(ArrRead);
                 MemoryStockPos++;
-                Logger.Log("Brain", string.Format("Stage 2.{0} : {1} \t {2}", boardLayout.Count, con2to1(blayout), con2to1(bpins)));
+                Logger.Log("Brain", string.Format("Stage 2.{0} : {1} \t\t {2}", boardLayout.Count, con2to1(blayout), con2to1(bpins)));
             }
             Logger.Log("Brain", "Stage 3 : Done. Knowledge Imported Successfuly");
             PlayList = new List<int[]>();
@@ -75,13 +76,14 @@ namespace TicTacToeML.Classes
                 connection.Open();
                 SqlCommand command = new SqlCommand(sql, connection);
                 command.ExecuteNonQuery();
-                command.ExecuteReader();
                 connection.Close();
                 MemoryStockPos--;
                 boardLayout.RemoveAt(0);
             }
+            Logger.Log("Brain-Memory", "Stage 1 : Updating Memory COMPLETE");
             //store
 
+            Logger.Log("Brain-Memory", "Stage 2 : Inserting New Memories");
             while (boardLayout.Count > 0)
             {
                 Logger.Log("Brain-Memory", string.Format("Stage 2 : Inserting new Memories. {0} left", boardLayout.Count));
@@ -93,13 +95,12 @@ namespace TicTacToeML.Classes
                 connection.Open();
                 SqlCommand command = new SqlCommand(sql, connection);
                 command.ExecuteNonQuery();
-                command.ExecuteReader();
                 connection.Close();
                 boardLayout.RemoveAt(0);
                 counter++;
             }
-            //string[] blayout = con2to1();
-            //string[] bpins = con2to1();
+            Logger.Log("Brain-Memory", "Stage 2 : Inserting New Memories. COMPLETE");
+            Logger.Log("Brain-Memory", " Done saving Memory");
         }
 
         public int[] play(string[,] board)
@@ -122,7 +123,7 @@ namespace TicTacToeML.Classes
                         }
                         else break;
                     }
-                 }
+                }
                 if (counter == 9)
                 {
                     pos = i;
@@ -166,7 +167,7 @@ namespace TicTacToeML.Classes
                 {//Add refresh counter
                     Logger.SetBackBlue();
                     Logger.Log("Brain-game", "                                    Reseting Node");
-                   // Logger.Reset();
+                    // Logger.Reset();
                     for (int a = 0; a < 3; a++)
                     {
                         for (int b = 0; b < 3; b++)
@@ -179,6 +180,7 @@ namespace TicTacToeML.Classes
                 }
             }
             Logger.Log("Brain-game", "                                   " + lc.ToString());
+            int temp = A;
             int B = A % 3;
             A = A / 3;
             int[] obj = { pos, A, B };

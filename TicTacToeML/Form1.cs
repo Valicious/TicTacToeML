@@ -6,6 +6,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using TicTacToeML.Classes;
@@ -21,7 +22,7 @@ namespace TicTacToeML
         private int boardCounter;
         private int gamecounter;
         private int win, lose, draw;
-        private bool GameOn;
+        private bool GameOn, Gameoff;
 
         public Form1()
         {
@@ -36,6 +37,7 @@ namespace TicTacToeML
             win = 0;
             lose = 0;
             draw = -1;
+            Gameoff = false;
         }
 
         public void GameLoop()
@@ -46,16 +48,21 @@ namespace TicTacToeML
                 {
                     GameDone();
                     startToolStripMenuItem_Click(null, null);
+                    if (Gameoff == true)
+                    {
+                        GameOn = false;
+                        break;
+                    }
                 }
                 NextPlayer();
                 groupBox1.Visible = false;//SPEED
-                if (gamecounter%500 == 0)//SPEED
-                Refresh();
+                if (gamecounter % 200 == 0)//SPEED
+                    Refresh();
                 ActiveControl = null;
                 boardCounter--;
-                if ((win / (gamecounter * 1.00) * 100) > 70) GameOn = false;
-                if ((draw / (gamecounter * 1.00) * 100) > 70) GameOn = false;
-                // if (gamecounter % 1000 == 0) GameOn = false;
+                //if ((win / (gamecounter * 1.00) * 100) > 70) GameOn = false;
+                //if ((draw / (gamecounter * 1.00) * 100) > 70) GameOn = false;
+                //if (gamecounter % 100 == 0) GameOn = false;
             }
         }
         private void startToolStripMenuItem_Click(object sender, EventArgs e)
@@ -134,8 +141,12 @@ namespace TicTacToeML
         {
             Random RandA = new Random();
             int A = RandA.Next(9);
-            while (_Board[A / 3, A % 3] != "")
-                A = RandA.Next(9);
+            Thread newThread = new Thread(delegate ()
+            {
+                while (_Board[A / 3, A % 3] != "")
+                    A = RandA.Next(9);
+            });
+            newThread.Start();
             int B = A % 3;
             A = A / 3;
             _Board[A, B] = Turn;
@@ -297,8 +308,20 @@ namespace TicTacToeML
 
         private void contiueToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            boardCounter = 0;
             GameOn = true;
             GameLoop();
+        }
+
+        private void stopToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Gameoff = true;
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            // TODO: This line of code loads data into the 'dbBrainDataSet.Knowledge' table. You can move, or remove it, as needed.
+
         }
 
         private void GameDone()
@@ -313,7 +336,7 @@ namespace TicTacToeML
             }
             else if (Turn == "O")
             {
-                
+
                 Logger.Log("MAIN-GameDone", "Machine Won");
                 win++;
                 _Mach.Learn('W');

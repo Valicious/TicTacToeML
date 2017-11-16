@@ -32,6 +32,7 @@
             this.gameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.startToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.updateMemoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.contiueToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.c3 = new System.Windows.Forms.Button();
@@ -51,7 +52,7 @@
             this.lblLos = new System.Windows.Forms.Label();
             this.lblDraw = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.contiueToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.stopToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
@@ -72,7 +73,8 @@
             this.gameToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.startToolStripMenuItem,
             this.updateMemoryToolStripMenuItem,
-            this.contiueToolStripMenuItem});
+            this.contiueToolStripMenuItem,
+            this.stopToolStripMenuItem});
             this.gameToolStripMenuItem.Name = "gameToolStripMenuItem";
             this.gameToolStripMenuItem.Size = new System.Drawing.Size(50, 20);
             this.gameToolStripMenuItem.Text = "Game";
@@ -89,6 +91,13 @@
             this.updateMemoryToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.updateMemoryToolStripMenuItem.Text = "Update Memory";
             this.updateMemoryToolStripMenuItem.Click += new System.EventHandler(this.updateMemoryToolStripMenuItem_Click);
+            // 
+            // contiueToolStripMenuItem
+            // 
+            this.contiueToolStripMenuItem.Name = "contiueToolStripMenuItem";
+            this.contiueToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.contiueToolStripMenuItem.Text = "contiue";
+            this.contiueToolStripMenuItem.Click += new System.EventHandler(this.contiueToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
@@ -294,12 +303,12 @@
             this.label2.TabIndex = 18;
             this.label2.Text = "Win             Lose               draw";
             // 
-            // contiueToolStripMenuItem
+            // stopToolStripMenuItem
             // 
-            this.contiueToolStripMenuItem.Name = "contiueToolStripMenuItem";
-            this.contiueToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
-            this.contiueToolStripMenuItem.Text = "contiue";
-            this.contiueToolStripMenuItem.Click += new System.EventHandler(this.contiueToolStripMenuItem_Click);
+            this.stopToolStripMenuItem.Name = "stopToolStripMenuItem";
+            this.stopToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.stopToolStripMenuItem.Text = "Stop";
+            this.stopToolStripMenuItem.Click += new System.EventHandler(this.stopToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -320,6 +329,7 @@
             this.MinimizeBox = false;
             this.Name = "Form1";
             this.Text = "Tic Tac Toe Machine Learn";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.groupBox1.ResumeLayout(false);
@@ -354,6 +364,7 @@
         private System.Windows.Forms.Label lblDraw;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.ToolStripMenuItem contiueToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem stopToolStripMenuItem;
     }
 }
 
