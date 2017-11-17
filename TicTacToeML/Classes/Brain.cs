@@ -209,6 +209,10 @@ namespace TicTacToeML.Classes
                     }
                 case 'D':
                     {
+                        //remove log is drawing is enabled
+                        Logger.SetBackRed();
+                        Logger.Log("Brain-GameDone", "DRAWING IS DISABLED!!");
+                        Logger.Reset();
                         break;
                         while (PlayList.Count > 0)
                         {

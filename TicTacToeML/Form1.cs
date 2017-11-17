@@ -152,6 +152,7 @@ namespace TicTacToeML
 
         private void BoardClick(object sender, EventArgs e)
         {
+            Logger.Log("MAIN-game", "Player made a selection");
             Refresh();
             ActiveControl = null;
             Turn = "X";
@@ -346,6 +347,7 @@ namespace TicTacToeML
             #endregion
             sender.Text = Turn;
             sender.Enabled = false;
+            Logger.Log("MAIN-game", "Machine Played");
             if (!GameOn)
                 if ((boardCounter == 0) || ((_ttt.checkwin(_Board))))
                     GameDone();
@@ -353,6 +355,7 @@ namespace TicTacToeML
 
         private void contiueToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            Logger.Log("MAIN", "Start game loop");
             boardCounter = 0;
             GameOn = true;
             GameLoop();
@@ -409,7 +412,10 @@ namespace TicTacToeML
                 dialogResult = MessageBox.Show("Update Memory", "Are you really sure?", MessageBoxButtons.YesNo);
                 if (dialogResult == DialogResult.Yes)
                 {
+                    Logger.SetBackRed();
+                    Logger.Log("MAIN-game", "Machine Played");
                     _Mach.UpdateMemory();
+                    Logger.Reset();
                 }
             }
         }
