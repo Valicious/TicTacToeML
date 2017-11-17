@@ -47,6 +47,20 @@ namespace TicTacToeML
                 if ((boardCounter == 0) || ((_ttt.checkwin(_Board))))
                 {
                     GameDone();
+                    //if (gamecounter % 500 == 0)
+                    if ((_Mach.Count()+1)%4000 == 0)
+                    {
+                        _Mach.UpdateMemory();
+                    }
+                    if (gamecounter%100000 == 0)
+                    {
+                        _Mach.UpdateMemory();
+                    }
+                    if (true)
+                    {
+                        GameOn = false;
+                        break;
+                    }
                     InitializeBoard();
                     if (Gameoff == true)
                     {
@@ -56,22 +70,21 @@ namespace TicTacToeML
                 }
                 NextPlayer();
                 groupBox1.Visible = false;//SPEED
-                if (gamecounter % 200 == 0)//SPEED
+                if (gamecounter % 500 == 0)//SPEED
                     Refresh();
                 ActiveControl = null;
                 boardCounter--;
                 //if ((win / (gamecounter * 1.00) * 100) > 70) GameOn = false;
                 //if ((draw / (gamecounter * 1.00) * 100) > 70) GameOn = false;
-                if (gamecounter % 600 == 0) GameOn = false;
+                
             }
         }
         private void startToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            groupBox1.Visible = true;
             InitializeBoard();
             NextPlayer();
-            Refresh();
-            ActiveControl = null;
-            boardCounter--;
+            
         }
 
         private void InitializeBoard()
@@ -115,14 +128,17 @@ namespace TicTacToeML
 
         private void BoardClick(object sender, EventArgs e)
         {
+            Refresh();
+            ActiveControl = null;
+            Turn = "X";
             int order = int.Parse(((Button)sender).Tag.ToString()) - 100;
             _Board[order % 3, order / 3] = Turn;
             ((Button)sender).Text = Turn;
             ((Button)sender).Enabled = false;
-            if (!_ttt.checkwin(_Board))
-                NextPlayer();
-            else GameDone();
             boardCounter--;
+            if ((boardCounter == 0) || ((_ttt.checkwin(_Board))))
+                GameDone();
+            else NextPlayer();
         }
 
         private void NextPlayer()
@@ -137,9 +153,11 @@ namespace TicTacToeML
             {
                 Logger.Log("MAIN-game", "--Player turn--");
                 Turn = "X";
-                randomPLay();
+                if (GameOn)
+                    randomPLay();
             }
         }
+
         Button sender;
         private void randomPLay()
         {
@@ -324,7 +342,6 @@ namespace TicTacToeML
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            // TODO: This line of code loads data into the 'dbBrainDataSet.Knowledge' table. You can move, or remove it, as needed.
 
         }
 
