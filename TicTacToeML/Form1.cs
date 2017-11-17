@@ -47,6 +47,20 @@ namespace TicTacToeML
                 if ((boardCounter == 0) || ((_ttt.checkwin(_Board))))
                 {
                     GameDone();
+                    //if (gamecounter % 500 == 0)
+                    if ((_Mach.Count()+1)%4000 == 0)
+                    {
+                        _Mach.UpdateMemory();
+                    }
+                    if (gamecounter%100000 == 0)
+                    {
+                        _Mach.UpdateMemory();
+                    }
+                    if (true)
+                    {
+                        GameOn = false;
+                        break;
+                    }
                     InitializeBoard();
                     if (Gameoff == true)
                     {
@@ -56,13 +70,13 @@ namespace TicTacToeML
                 }
                 NextPlayer();
                 groupBox1.Visible = false;//SPEED
-                if (gamecounter % 200 == 0)//SPEED
+                if (gamecounter % 500 == 0)//SPEED
                     Refresh();
                 ActiveControl = null;
                 boardCounter--;
                 //if ((win / (gamecounter * 1.00) * 100) > 70) GameOn = false;
                 //if ((draw / (gamecounter * 1.00) * 100) > 70) GameOn = false;
-                if (gamecounter % 500 == 0) GameOn = false;
+                
             }
         }
         private void startToolStripMenuItem_Click(object sender, EventArgs e)
