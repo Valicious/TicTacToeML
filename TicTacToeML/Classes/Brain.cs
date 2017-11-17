@@ -13,7 +13,7 @@ namespace TicTacToeML.Classes
 {
     class Brain
     {
-        private const double Kbase = 19683.00000000000;//total possible board layouts
+        private const double Kbase = 9683.00000000000;//total possible board layouts
         public double KnowledgeCompleteness { get; set; }
         private List<string[][,]> boardLayout;
         private int MemoryStockPos;
@@ -62,14 +62,16 @@ namespace TicTacToeML.Classes
 
         public void UpdateMemory()
         {
+            //return;
             //update
             Logger.Log("Brain-Memory", "Stage 1 : Updating Memory");
             int counter = MemoryStockPos;
-            while (MemoryStockPos > 0)
+            int MemCounter = 0;
+            while (MemoryStockPos -MemCounter !=0)
             {
-                Logger.Log("Brain-Memory", string.Format("Stage 1 : Updating Memory. {0} left", MemoryStockPos));
-                string blayout = con2to1(boardLayout[0][0]);
-                string bpins = con2to1(boardLayout[0][1]);
+                Logger.Log("Brain-Memory", string.Format("Stage 1 : Updating Memory. {0} left", MemoryStockPos - MemCounter));
+                string blayout = con2to1(boardLayout[MemCounter][0]);
+                string bpins = con2to1(boardLayout[MemCounter][1]);
                 string CS = ConfigurationManager.ConnectionStrings["dbBrain_Conn"].ConnectionString;
                 SqlConnection connection = new SqlConnection(CS);
                 string sql = "UPDATE [Knowledge] SET [Pins] = '" + bpins + "' WHERE [Layout] = '" + blayout + "'";
@@ -77,18 +79,16 @@ namespace TicTacToeML.Classes
                 SqlCommand command = new SqlCommand(sql, connection);
                 command.ExecuteNonQuery();
                 connection.Close();
-                MemoryStockPos--;
-                boardLayout.RemoveAt(0);
+                MemCounter++;
             }
             Logger.Log("Brain-Memory", "Stage 1 : Updating Memory COMPLETE");
             //store
-
             Logger.Log("Brain-Memory", "Stage 2 : Inserting New Memories");
-            while (boardLayout.Count > 0)
+            while (boardLayout.Count > MemCounter)
             {
-                Logger.Log("Brain-Memory", string.Format("Stage 2 : Inserting new Memories. {0} left", boardLayout.Count));
-                string blayout = con2to1(boardLayout[0][0]);
-                string bpins = con2to1(boardLayout[0][1]);
+                Logger.Log("Brain-Memory", string.Format("Stage 2 : Inserting new Memories. {0} left", boardLayout.Count - MemCounter));
+                string blayout = con2to1(boardLayout[MemCounter][0]);
+                string bpins = con2to1(boardLayout[MemCounter][1]);
                 string CS = ConfigurationManager.ConnectionStrings["dbBrain_Conn"].ConnectionString;
                 SqlConnection connection = new SqlConnection(CS);
                 string sql = "INSERT INTO [Knowledge] ([IDstate], [Layout], [Pins]) VALUES (" + counter + " ,N'" + blayout + "' ,N'" + bpins + "')";
@@ -96,11 +96,12 @@ namespace TicTacToeML.Classes
                 SqlCommand command = new SqlCommand(sql, connection);
                 command.ExecuteNonQuery();
                 connection.Close();
-                boardLayout.RemoveAt(0);
                 counter++;
+                MemCounter++;
             }
             Logger.Log("Brain-Memory", "Stage 2 : Inserting New Memories. COMPLETE");
             Logger.Log("Brain-Memory", " Done saving Memory");
+            MemoryStockPos = MemCounter;
         }
 
         public int[] play(string[,] board)
@@ -208,6 +209,7 @@ namespace TicTacToeML.Classes
                     }
                 case 'D':
                     {
+                        break;
                         while (PlayList.Count > 0)
                         {
                             int[] cur = PlayList[0];

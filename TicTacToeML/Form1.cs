@@ -23,6 +23,7 @@ namespace TicTacToeML
         private int gamecounter;
         private int win, lose, draw;
         private bool GameOn, Gameoff;
+        private int insertednum = 0;
 
         public Form1()
         {
@@ -48,19 +49,34 @@ namespace TicTacToeML
                 {
                     GameDone();
                     //if (gamecounter % 500 == 0)
-                    if ((_Mach.Count()+1)%4000 == 0)
+                    if ((_Mach.Count() + 1) % 1000 == 0)
+                    {
+                        Logger.SetBackRed();
+                        Logger.Log("MAIN", "Save Memory");
+                        if (insertednum != (_Mach.Count() + 1))
+                        {
+                            Logger.Log("MAIN", "Saving Memory");
+                            insertednum = _Mach.Count() + 1;
+                            _Mach.UpdateMemory();
+                        }else Logger.Log("MAIN", "Save Memory Failed!");
+                        Logger.Reset();
+                    }
+                    if ((gamecounter + 1) % 50000 == 0)
                     {
                         _Mach.UpdateMemory();
                     }
-                    if (gamecounter%100000 == 0)
-                    {
-                        _Mach.UpdateMemory();
-                    }
-                    if (true)
-                    {
-                        GameOn = false;
-                        break;
-                    }
+                    //disable when not testing
+                    //if ((gamecounter + 1) % 100 == 0)
+                    //{
+                    //    _Mach.UpdateMemory();
+                    //    GameOn = false;
+                    //    break;
+                    //}
+                    //if (true)
+                    //{
+                    //    GameOn = false;
+                    //    break;
+                    //}
                     InitializeBoard();
                     if (Gameoff == true)
                     {
@@ -70,13 +86,21 @@ namespace TicTacToeML
                 }
                 NextPlayer();
                 groupBox1.Visible = false;//SPEED
-                if (gamecounter % 500 == 0)//SPEED
-                    Refresh();
+                //if (gamecounter % 500 == 0)//SPEED
+                //{
+
+                //    Refresh();
+                //}
                 ActiveControl = null;
                 boardCounter--;
                 //if ((win / (gamecounter * 1.00) * 100) > 70) GameOn = false;
                 //if ((draw / (gamecounter * 1.00) * 100) > 70) GameOn = false;
+                if (gamecounter % 100 == 0)//SPEED
+                {
+                    Logger.ConsoleUpdate(lblwin.Text, lblLos.Text, lblDraw.Text, gamecounter, _Mach.Count());
+                }
                 
+
             }
         }
         private void startToolStripMenuItem_Click(object sender, EventArgs e)
@@ -84,7 +108,7 @@ namespace TicTacToeML
             groupBox1.Visible = true;
             InitializeBoard();
             NextPlayer();
-            
+
         }
 
         private void InitializeBoard()
@@ -163,12 +187,8 @@ namespace TicTacToeML
         {
             Random RandA = new Random();
             int A = RandA.Next(9);
-            Thread newThread = new Thread(delegate ()
-            {
-                while (_Board[A / 3, A % 3] != "")
-                    A = RandA.Next(9);
-            });
-            newThread.Start();
+            while (_Board[A / 3, A % 3] != "")
+                A = RandA.Next(9);
             int B = A % 3;
             A = A / 3;
             _Board[A, B] = Turn;
@@ -326,6 +346,9 @@ namespace TicTacToeML
             #endregion
             sender.Text = Turn;
             sender.Enabled = false;
+            if (!GameOn)
+                if ((boardCounter == 0) || ((_ttt.checkwin(_Board))))
+                    GameDone();
         }
 
         private void contiueToolStripMenuItem_Click(object sender, EventArgs e)
